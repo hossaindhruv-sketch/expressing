@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Love 🌙 — Under the Same Moon</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Caveat:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    background: #0a0618;
+    color: #e8e0f0;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ============ NIGHT SKY BACKGROUND ============ */
+  #sky {
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(120,80,200,.25) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(200,80,160,.18) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(60,40,120,.3) 0%, transparent 70%),
+      linear-gradient(180deg, #05020f 0%, #0d0620 40%, #140a2a 100%);
+    z-index: 0;
+  }
+  #starsCanvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+
+  /* fireflies */
+  .firefly {
+    position: fixed;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: #ffe9a8;
+    box-shadow: 0 0 12px #ffe9a8, 0 0 24px rgba(255,220,120,.5);
+    pointer-events: none;
+    z-index: 2;
+    animation: fireflyFloat linear infinite;
+  }
+  @keyframes fireflyFloat {
+    0% { transform: translate(0,0); opacity: 0; }
+    10% { opacity: 1; }
+    50% { transform: translate(80px,-120px); opacity: .7; }
+    90% { opacity: .3; }
+    100% { transform: translate(-40px,-240px); opacity: 0; }
+  }
+
+  /* ============ OPENING ============ */
+  #opening {
+    position: fixed; inset: 0;
+    z-index: 9999;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    background: radial-gradient(circle at 50% 45%, rgba(180,140,240,.15) 0%, transparent 60%);
+    transition: opacity 1s ease;
+  }
+  #opening.hidden { opacity: 0; pointer-events: none; }
+
+  .moon-gate {
+    position: relative;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff8e7 0%, #f0e0c0 40%, #c8b090 100%);
+    box-shadow:
+      0 0 60px rgba(255,240,200,.4),
+      0 0 120px rgba(255,220,160,.2),
+      inset -20px -20px 40px rgba(120,90,60,.3);
+    animation: moonGlow 4s ease-in-out infinite;
+  }
+  @keyframes moonGlow {
+    0%,100% { box-shadow: 0 0 60px rgba(255,240,200,.4), 0 0 120px rgba(255,220,160,.2), inset -20px -20px 40px rgba(120,90,60,.3); }
+    50% { box-shadow: 0 0 90px rgba(255,240,200,.6), 0 0 180px rgba(255,220,160,.35), inset -20px -20px 40px rgba(120,90,60,.3); }
+  }
+  .moon-gate::before {
+    content: "";
+    position: absolute;
+    inset: 0; border-radius: 50%;
+    background: radial-gradient(circle at 60% 40%, transparent 55%, rgba(20,10,30,.35) 55%);
+  }
+
+  .opening-title {
+    margin-top: 40px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.6rem, 5vw, 2.6rem);
+    color: #f0e0f8;
+    text-align: center;
+    letter-spacing: 1px;
+    text-shadow: 0 0 30px rgba(200,160,255,.6);
+  }
+  .opening-sub {
+    margin-top: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-size: .85rem;
+    color: #b8a8d8;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    animation: blink 2.5s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+  /* ============ MUSIC TOGGLE ============ */
+  .music-toggle {
+    position: fixed; top: 18px; right: 18px;
+    z-index: 1000;
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background: rgba(120,80,200,.3);
+    border: 1px solid rgba(200,160,255,.5);
+    color: #e8e0f0;
+    font-size: 20px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all .3s;
+  }
+  .music-toggle:hover { background: rgba(120,80,200,.5); transform: scale(1.08); }
+  .music-toggle.playing { animation: spin 4s linear infinite; border-color: #ffe9a8; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ============ MAIN ============ */
+  #main { display: none; position: relative; z-index: 5; }
+  #main.visible { display: block; }
+
+  .section { max-width: 900px; margin: 0 auto; padding: 70px 24px; }
+
+  /* ============ HERO ============ */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 40px 20px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero-moon {
+    position: absolute;
+    top: 8%; right: 10%;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff8e7 0%, #f0e0c0 40%, #c8b090 100%);
+    box-shadow: 0 0 60px rgba(255,240,200,.5), 0 0 120px rgba(255,220,160,.25);
+    z-index: 1;
+    animation: moonFloat 8s ease-in-out infinite;
+  }
+  @keyframes moonFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+  .hero-content {
+    position: relative;
+    z-index: 3;
+    max-width: 780px;
+  }
+  .hero-eyebrow {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-size: .8rem;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #b8a8d8;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(2.4rem, 7vw, 4.5rem);
+    line-height: 1.15;
+    color: #f8f0ff;
+    text-shadow: 0 0 40px rgba(200,160,255,.4);
+    opacity: 0;
+    animation: fadeUp 1.4s ease .3s forwards;
+  }
+  .hero-title .accent {
+    color: #ffd1e0;
+    font-style: normal;
+  }
+  .hero-sub {
+    margin-top: 24px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: #c8b8e8;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 1.6s ease .6s forwards;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-scroll {
+    position: absolute;
+    bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Poppins', sans-serif;
+    font-size: .7rem;
+    letter-spacing: 4px;
+    color: #b8a8d8;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.4s forwards;
+  }
+  .hero-scroll::after {
+    content: "";
+    display: block;
+    width: 1px; height: 30px;
+    background: linear-gradient(to bottom, #b8a8d8, transparent);
+    margin: 10px auto 0;
+  }
+
+  /* ============ APOLOGY BAND ============ */
+  .apology {
+    background: linear-gradient(90deg, rgba(120,40,80,.4), rgba(80,40,120,.4));
+    border-top: 1px solid rgba(255,180,220,.3);
+    border-bottom: 1px solid rgba(255,180,220,.3);
+    padding: 18px 24px;
+    text-align: center;
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    color: #ffd1e0;
+    letter-spacing: .5px;
+    position: relative;
+    z-index: 5;
+    backdrop-filter: blur(6px);
+  }
+  .apology button {
+    margin-left: 12px;
+    background: transparent;
+    border: 1px solid rgba(255,180,220,.5);
+    color: #ffd1e0;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-size: .7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all .3s;
+  }
+  .apology button:hover { background: rgba(255,180,220,.15); }
+  .apology-msg {
+    display: none;
+    max-width: 700px;
+    margin: 16px auto 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: #c8b8e8;
+    line-height: 1.8;
+  }
+  .apology-msg.show { display: block; animation: fadeUp .6s ease; }
+
+  /* ============ SECTION HEADINGS ============ */
+  .section-label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-size: .72rem;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #b8a8d8;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+    color: #f8f0ff;
+    text-align: center;
+    line-height: 1.3;
+    margin-bottom: 50px;
+    text-shadow: 0 0 30px rgba(200,160,255,.3);
+  }
+  .section-title .accent { color: #ffd1e0; font-style: normal; }
+
+  /* ============ FILM REEL ============ */
+  .reel {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 20px 0 40px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: #6a4a9a transparent;
+  }
+  .reel::-webkit-scrollbar { height: 6px; }
+  .reel::-webkit-scrollbar-track { background: transparent; }
+  .reel::-webkit-scrollbar-thumb { background: #6a4a9a; border-radius: 3px; }
+
+  .frame {
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+    width: min(72vw, 320px);
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #1a0f30;
+    box-shadow: 0 20px 50px rgba(0,0,0,.5), 0 0 0 1px rgba(200,160,255,.2);
+    transition: transform .5s ease;
+    cursor: pointer;
+  }
+  .frame:hover { transform: translateY(-8px) scale(1.02); }
+  .frame img {
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    display: block;
+    background: #2a1a4a;
+    transition: transform .8s ease, filter .5s;
+  }
+  .frame:hover img { transform: scale(1.06); filter: brightness(1.05); }
+  .frame::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 55%, rgba(10,6,24,.85) 100%);
+    pointer-events: none;
+  }
+  .frame-cap {
+    position: absolute;
+    bottom: 16px; left: 18px; right: 18px;
+    z-index: 2;
+    font-family: 'Caveat', cursive;
+    font-size: 1.2rem;
+    color: #ffe9a8;
+    letter-spacing: .5px;
+    text-shadow: 0 2px 10px rgba(0,0,0,.6);
+  }
+
+  /* ============ STORYBOOK LETTER ============ */
+  .storybook {
+    background: linear-gradient(160deg, rgba(30,15,55,.85), rgba(15,8,32,.95));
+    border: 1px solid rgba(200,160,255,.25);
+    border-radius: 20px;
+    padding: 40px 28px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
+  }
+  .storybook::before {
+    content: "❝";
+    position: absolute;
+    top: -10px; left: 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 8rem;
+    color: rgba(200,160,255,.15);
+    line-height: 1;
+  }
+  .page { display: none; animation: pageIn .8s ease; }
+  .page.active { display: block; }
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .page-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.1rem, 2.4vw, 1.3rem);
+    font-style: italic;
+    line-height: 1.85;
+    color: #e8e0f0;
+    margin-bottom: 24px;
+  }
+  .page-num {
+    font-family: 'Poppins', sans-serif;
+    font-size: .65rem;
+    letter-spacing: 4px;
+    color: #8a7aa8;
+    text-align: center;
+    margin-top: 20px;
+  }
+  .page-nav {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 24px;
+    position: relative;
+    z-index: 2;
+  }
+  .page-btn {
+    background: rgba(120,80,200,.2);
+    border: 1px solid rgba(200,160,255,.4);
+    color: #e8e0f0;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-family: 'Poppins', sans-serif;
+    font-size: .75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all .3s;
+  }
+  .page-btn:hover { background: rgba(120,80,200,.4); border-color: #ffe9a8; color: #ffe9a8; }
+  .page-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+  /* ============ PILL JAR ============ */
+  .jar-wrap { text-align: center; position: relative; }
+  .jar {
+    display: inline-block;
+    font-size: 5rem;
+    cursor: pointer;
+    transition: transform .3s;
+    filter: drop-shadow(0 0 30px rgba(255,220,160,.3));
+    user-select: none;
+  }
+  .jar:hover { transform: scale(1.06) rotate(-3deg); }
+  .jar.shake { animation: jarShake .5s ease; }
+  @keyframes jarShake {
+    0%,100% { transform: rotate(0); }
+    25% { transform: rotate(-8deg); }
+    75% { transform: rotate(8deg); }
+  }
+  .jar-hint {
+    font-family: 'Poppins', sans-serif;
+    font-size: .7rem;
+    letter-spacing: 4px;
+    color: #b8a8d8;
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+  .pill-display {
+    margin: 30px auto 0;
+    max-width: 540px;
+    min-height: 130px;
+    background: rgba(30,15,55,.7);
+    border: 1px solid rgba(200,160,255,.3);
+    border-radius: 16px;
+    padding: 30px 24px;
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    color: #ffe9a8;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: opacity .4s;
+  }
+  .pill-display.pop { animation: pillPop .5s ease; }
+  @keyframes pillPop {
+    0% { transform: scale(.9); opacity: 0; }
+    60% { transform: scale(1.03); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* ============ CONSTELLATION GAME ============ */
+  .constellation-wrap {
+    background: rgba(10,6,24,.7);
+    border: 1px solid rgba(200,160,255,.25);
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+  }
+  #constellationCanvas {
+    width: 100%;
+    height: 320px;
+    display: block;
+    border-radius: 12px;
+    cursor: crosshair;
+    touch-action: none;
+  }
+  .constellation-status {
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: .8rem;
+    letter-spacing: 2px;
+    color: #b8a8d8;
+    margin: 16px 0 12px;
+    text-transform: uppercase;
+  }
+  .night-btn {
+    display: block;
+    margin: 0 auto;
+    background: linear-gradient(135deg, rgba(140,90,220,.4), rgba(200,80,160,.3));
+    border: 1px solid rgba(255,220,160,.5);
+    color: #ffe9a8;
+    padding: 12px 32px;
+    border-radius: 30px;
+    font-family: 'Poppins', sans-serif;
+    font-size: .75rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all .3s;
+  }
+  .night-btn:hover {
+    background: linear-gradient(135deg, rgba(140,90,220,.6), rgba(200,80,160,.5));
+    box-shadow: 0 0 30px rgba(255,220,160,.3);
+    transform: translateY(-2px);
+  }
+
+  /* ============ GUESS THE MEMORY FLIP CARDS ============ */
+  .guess-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+  }
+  .guess-card {
+    aspect-ratio: 4/5;
+    position: relative;
+    cursor: pointer;
+    perspective: 1000px;
+  }
+  .guess-inner {
+    position: absolute; inset: 0;
+    transform-style: preserve-3d;
+    transition: transform .8s cubic-bezier(.4,0,.2,1);
+    border-radius: 14px;
+  }
+  .guess-card.flipped .guess-inner { transform: rotateY(180deg); }
+  .guess-face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid rgba(200,160,255,.3);
+  }
+  .guess-front {
+    background: linear-gradient(160deg, rgba(30,15,55,.9), rgba(15,8,32,.95));
+    font-size: 3rem;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .guess-front-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: .6rem;
+    letter-spacing: 3px;
+    color: #b8a8d8;
+    text-transform: uppercase;
+  }
+  .guess-back {
+    background: linear-gradient(160deg, rgba(140,90,220,.35), rgba(200,80,160,.25));
+    transform: rotateY(180deg);
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    color: #ffe9a8;
+    line-height: 1.5;
+  }
+
+  /* ============ ARCADE (night theme) ============ */
+  .arcade {
+    background: linear-gradient(160deg, rgba(20,10,40,.9), rgba(10,5,20,.95));
+    border: 1px solid rgba(200,160,255,.25);
+    border-radius: 20px;
+    padding: 30px 22px;
+    margin: 40px 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);
+  }
+  .arcade::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(to bottom, rgba(255,255,255,.02) 0 1px, transparent 1px 3px);
+    pointer-events: none;
+  }
+  .arcade-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.6rem;
+    color: #f8f0ff;
+    text-align: center;
+    margin-bottom: 6px;
+    position: relative; z-index: 2;
+  }
+  .arcade-sub {
+    font-family: 'Poppins', sans-serif;
+    font-size: .68rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #b8a8d8;
+    text-align: center;
+    margin-bottom: 22px;
+    position: relative; z-index: 2;
+  }
+
+  /* memory cards night */
+  .memory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    max-width: 340px;
+    margin: 0 auto 22px;
+    position: relative; z-index: 2;
+  }
+  .memory-card {
+    aspect-ratio: 1;
+    background: rgba(30,15,55,.9);
+    border: 1px solid rgba(200,160,255,.35);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    cursor: pointer;
+    user-select: none;
+    color: transparent;
+    transition: all .25s;
+    box-shadow: inset 0 0 12px rgba(120,80,200,.2);
+  }
+  .memory-card:active { transform: scale(.94); }
+  .memory-card.flipped { background: rgba(255,240,220,.95); color: #4a2a6a; border-color: #ffe9a8; }
+  .memory-card.matched { background: rgba(255,220,160,.25); border-color: #ffe9a8; box-shadow: 0 0 18px rgba(255,220,160,.4); }
+
+  /* game areas */
+  #starArea, #fireflyArea, #wishArea {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    background: radial-gradient(circle at 50% 50%, rgba(60,30,110,.5), rgba(8,4,18,.9));
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    border: 1px solid rgba(200,160,255,.2);
+    box-shadow: inset 0 0 40px rgba(0,0,0,.6);
+    position: relative;
+    z-index: 2;
+  }
+  #wishArea { display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+  .falling-star, .firefly-game, .wish-star {
+    position: absolute;
+    user-select: none;
+    will-change: transform;
+  }
+  .falling-star { font-size: 28px; cursor: pointer; }
+  .firefly-game {
+    font-size: 30px; cursor: pointer;
+    animation: fireflyBob 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px #ffe9a8);
+  }
+  @keyframes fireflyBob {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-12px) scale(1.08); }
+  }
+  .wish-star {
+    font-size: 56px; cursor: pointer;
+    position: relative !important;
+    filter: drop-shadow(0 0 20px #ffe9a8);
+    animation: wishPop .3s ease-out;
+  }
+  @keyframes wishPop {
+    from { transform: scale(.3) rotate(-20deg); opacity: 0; }
+    to { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  .score-line {
+    font-family: 'Poppins', sans-serif;
+    font-size: .72rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #ffe9a8;
+    text-align: center;
+    margin: 10px 0 16px;
+    position: relative; z-index: 2;
+  }
+
+  /* ============ SONG CARD ============ */
+  .song-card {
+    background: linear-gradient(135deg, rgba(140,90,220,.2), rgba(200,80,160,.15));
+    border: 1px solid rgba(200,160,255,.3);
+    border-radius: 20px;
+    padding: 34px 24px;
+    text-align: center;
+    margin: 40px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .song-card::before {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    background: radial-gradient(circle, rgba(255,220,160,.1) 0%, transparent 60%);
+    animation: aura 6s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes aura {
+    0%,100% { transform: scale(1); opacity: .5; }
+    50% { transform: scale(1.2); opacity: 1; }
+  }
+  .song-icon {
+    font-size: 3.5rem;
+    cursor: pointer;
+    display: inline-block;
+    transition: transform .3s;
+    position: relative; z-index: 2;
+  }
+  .song-icon:hover { transform: scale(1.1); }
+  .song-icon.playing { animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+  .song-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.4rem;
+    color: #f8f0ff;
+    margin-top: 16px;
+    position: relative; z-index: 2;
+  }
+  .song-sub {
+    font-family: 'Poppins', sans-serif;
+    font-size: .7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #b8a8d8;
+    margin-top: 8px;
+    position: relative; z-index: 2;
+  }
+
+  /* ============ FINAL ============ */
+  .final {
+    text-align: center;
+    padding: 100px 24px 120px;
+    position: relative;
+  }
+  .final-star {
+    font-size: 3rem;
+    margin-bottom: 30px;
+    display: inline-block;
+    animation: moonFloat 6s ease-in-out infinite;
+    filter: drop-shadow(0 0 30px #ffe9a8);
+  }
+  .final-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(2rem, 5.5vw, 3.4rem);
+    color: #f8f0ff;
+    line-height: 1.3;
+    margin-bottom: 24px;
+    text-shadow: 0 0 40px rgba(200,160,255,.4);
+  }
+  .final-title .accent { color: #ffd1e0; font-style: normal; }
+  .final-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(1rem, 2.4vw, 1.25rem);
+    color: #c8b8e8;
+    max-width: 620px;
+    margin: 0 auto 32px;
+    line-height: 1.8;
+  }
+  .final-sig {
+    font-family: 'Caveat', cursive;
+    font-size: 2rem;
+    color: #ffe9a8;
+    letter-spacing: 1px;
+  }
+
+  /* lightbox */
+  #lightbox {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(5,2,15,.94);
+    z-index: 9997;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(8px);
+  }
+  #lightbox.show { display: flex; }
+  #lightbox img {
+    max-width: 92vw;
+    max-height: 88vh;
+    border-radius: 12px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.8), 0 0 60px rgba(200,160,255,.2);
+  }
+
+  .footer {
+    text-align: center;
+    padding: 30px 20px 50px;
+    font-family: 'Poppins', sans-serif;
+    font-size: .7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #6a5a88;
+  }
+
+  /* responsive */
+  @media (max-width: 640px) {
+    .hero-moon { width: 90px; height: 90px; top: 5%; right: 6%; }
+    .moon-gate { width: 120px; height: 120px; }
+    .storybook { padding: 30px 20px; }
+    .guess-grid { grid-template-columns: 1fr; max-width: 340px; margin: 0 auto; }
+    .memory-grid { gap: 8px; }
+    .memory-card { font-size: 22px; }
+    .music-toggle { width: 44px; height: 44px; font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- night sky + stars -->
+<div id="sky"></div>
+<canvas id="starsCanvas"></canvas>
+
+<!-- music toggle -->
+<button class="music-toggle" id="musicToggle" title="Music">🎵</button>
+
+<!-- ============ OPENING ============ -->
+<div id="opening">
+  <div class="moon-gate"></div>
+  <div class="opening-title">Under the same moon</div>
+  <div class="opening-sub">Tap to enter</div>
+</div>
+
+<!-- ============ MAIN ============ -->
+<div id="main">
+
+  <!-- hero -->
+  <section class="hero">
+    <div class="hero-moon"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">For my love</div>
+      <h1 class="hero-title">Every star up there<br><span class="accent">is a reason I love you</span></h1>
+      <p class="hero-sub">I tried to count them once. I ran out of stars.</p>
+    </div>
+    <div class="hero-scroll">scroll gently</div>
+  </section>
+
+  <!-- apology band -->
+  <div class="apology" id="apologyBand">
+    — and if you're still a little mad at me, that's okay. I'll wait under the same moon. 🤍
+    <button id="apologyToggle">Read more</button>
+    <div class="apology-msg" id="apologyMsg">
+      I know I'm not always perfect. I know I say the wrong thing sometimes, or the right thing at the wrong time. But here's what I know for sure: I would rather sit in the quiet with you than be anywhere else with anyone else. So take your time. I'm not going anywhere. — yours, always 🤍
+    </div>
+  </div>
+
+  <!-- film reel -->
+  <section class="section">
+    <div class="section-label">Chapter One</div>
+    <h2 class="section-title">Moments I keep <span class="accent">replaying</span></h2>
+    <div class="reel">
+      <div class="frame" onclick="openLightbox(this.querySelector('img').src)">
+        <img src="https://i.postimg.cc/yxNqdqvq/Whats-App-Image-2026-11-06-at-3-21-52-PM.jpg" alt="Moment 1">
+        <div class="frame-cap">the first one</div>
+      </div>
+      <div class="frame" onclick="openLightbox(this.querySelector('img').src)">
+        <img src="https://i.postimg.cc/x8pwNsFp/Whats-App-Image-2026-11-06-at-3-21-53-PM.jpg" alt="Moment 2">
+        <div class="frame-cap">my favorite view</div>
+      </div>
+      <div class="frame" onclick="openLightbox(this.querySelector('img').src)">
+        <img src="https://i.postimg.cc/ZnsGvfDV/Whats-App-Image-2026-11-06-at-3-21-53-PM-(1).jpg" alt="Moment 3">
+        <div class="frame-cap">that day</div>
+      </div>
+      <div class="frame" onclick="openLightbox(this.querySelector('img').src)">
+        <img src="https://i.postimg.cc/NFC32NPW/Whats-App-Image-2026-11-06-at-3-21-54-PM.jpg" alt="Moment 4">
+        <div class="frame-cap">soft light</div>
+      </div>
+      <div class="frame" onclick="openLightbox(this.querySelector('img').src)">
+        <img src="https://i.postimg.cc/8cX2fyn0/Whats-App-Image-2026-11-06-at-3-21-54-PM-(1).jpg" alt="Moment 5">
+        <div class="frame-cap">us</div>
+      </div>
+      <div class="frame" onclick="openLightbox(this.querySelector('img').src)">
+        <img src="https://i.postimg.cc/Hnvq8ShG/Whats-App-Image-2026-11-06-at-3-21-55-PM.jpg" alt="Moment 6">
+        <div class="frame-cap">my person</div>
+      </div>
+      <div class="frame" onclick="openLightbox(this.querySelector('img').src)">
+        <img src="https://i.postimg.cc/prcw501w/Whats-App-Image-2026-11-06-at-3-21-55-PM-(1).jpg" alt="Moment 7">
+        <div class="frame-cap">always</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- storybook letter -->
+  <section class="section">
+    <div class="section-label">Chapter Two</div>
+    <h2 class="section-title">A letter, <span class="accent">page by page</span></h2>
+    <div class="storybook">
+      <div class="page active" data-page="0">
+        <p class="page-text">My love. I've started this letter a hundred times in my head and every time I get stuck at the same place: how do you tell someone they're the whole sky? Language keeps offering me small words and I keep refusing them because they don't fit you. So I'll just say it plainly: you are the best thing that has ever happened to me, and I don't know what I did to deserve it.</p>
+        <div class="page-num">— 1 of 5 —</div>
+      </div>
+      <div class="page" data-page="1">
+        <p class="page-text">Before you, I thought love was a big loud thing — grand gestures, loud music, grand declarations. Then you came along and love became a quiet text in the middle of the day. A hand on my back when I'm tired. A laugh I can hear through a wall. You made love small enough to fit inside ordinary life, and somehow that made it bigger than anything I'd imagined.</p>
+        <div class="page-num">— 2 of 5 —</div>
+      </div>
+      <div class="page" data-page="2">
+        <p class="page-text">I love the way you care about things. I love that you can be so soft and so fierce in the same minute. I love that you say what you mean and mean what you say — even when it's inconvenient, even when it's about me. You're honest in a way that makes me want to be honest too. Being loved by you makes me braver than I was before you.</p>
+        <div class="page-num">— 3 of 5 —</div>
+      </div>
+      <div class="page" data-page="3">
+        <p class="page-text">I know I'm not always easy. I know I get things wrong. But I want you to know that on every single day — even the ones where we don't quite meet in the middle — I am still choosing you. Still turning toward you. Still thinking, "her. always her." That hasn't changed once. I don't think it ever will.</p>
+        <div class="page-num">— 4 of 5 —</div>
+      </div>
+      <div class="page" data-page="4">
+        <p class="page-text">Thank you for being born. Thank you for letting me witness you. Thank you for being the kind of person I get to brag about. I hope this year is gentle with you. I hope it gives you everything you've been quietly hoping for. And I hope I get to be right there, holding your hand, when it does. 💫</p>
+        <div class="page-num">— 5 of 5 —</div>
+      </div>
+      <div class="page-nav">
+        <button class="page-btn" id="prevPage" disabled>Previous</button>
+        <button class="page-btn" id="nextPage">Next page</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- pill jar -->
+  <section class="section">
+    <div class="section-label">Chapter Three</div>
+    <h2 class="section-title">The little things <span class="accent">about you</span></h2>
+    <div class="jar-wrap">
+      <div class="jar" id="jar">🫙</div>
+      <div class="jar-hint">tap the jar for a tiny memory</div>
+      <div class="pill-display" id="pillDisplay">Tap the jar to open a little capsule of you 🤍</div>
+    </div>
+  </section>
+
+  <!-- constellation game -->
+  <section class="section">
+    <div class="section-label">Chapter Four</div>
+    <h2 class="section-title">Connect the stars, <span class="accent">find us</span></h2>
+    <div class="constellation-wrap">
+      <canvas id="constellationCanvas"></canvas>
+      <p class="constellation-status" id="constellationStatus">Drag from one star to another to draw the shape</p>
+      <button class="night-btn" id="resetConstellationBtn">Reset the sky</button>
+    </div>
+  </section>
+
+  <!-- song card -->
+  <div class="song-card">
+    <div class="song-icon" id="songIcon">🎧</div>
+    <div class="song-title">A little song for you</div>
+    <div class="song-sub">tap to play</div>
+  </div>
+
+  <!-- guess the memory flip cards -->
+  <section class="section">
+    <div class="section-label">Chapter Five</div>
+    <h2 class="section-title">Three little <span class="accent">secrets</span></h2>
+    <div class="guess-grid">
+      <div class="guess-card">
+        <div class="guess-inner">
+          <div class="guess-face guess-front">
+            <div>🤍</div>
+            <div class="guess-front-label">tap to open</div>
+          </div>
+          <div class="guess-face guess-back">The first time you laughed at something I said, I remember thinking "I would do anything to hear that again." Still true.</div>
+        </div>
+      </div>
+      <div class="guess-card">
+        <div class="guess-inner">
+          <div class="guess-face guess-front">
+            <div>🌙</div>
+            <div class="guess-front-label">tap to open</div>
+          </div>
+          <div class="guess-face guess-back">I keep a mental list of every time you were kind when you didn't have to be. It's a very long list. It might be my favorite thing I own.</div>
+        </div>
+      </div>
+      <div class="guess-card">
+        <div class="guess-inner">
+          <div class="guess-face guess-front">
+            <div>✨</div>
+            <div class="guess-front-label">tap to open</div>
+          </div>
+          <div class="guess-face guess-back">If I could give you one thing this year, it would be the ability to see yourself the way I see you. You would never doubt yourself again.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- arcade games -->
+  <section class="section">
+    <div class="section-label">Chapter Six</div>
+    <h2 class="section-title">A few games <span class="accent">under the moon</span></h2>
+
+    <!-- star catcher -->
+    <div class="arcade">
+      <div class="arcade-title">⭐ Star Catcher</div>
+      <div class="arcade-sub">catch the falling stars · 15 seconds</div>
+      <div id="starArea"></div>
+      <p class="score-line" id="starScore">score: 0</p>
+      <button class="night-btn" id="startStarBtn">Start</button>
+    </div>
+
+    <!-- moon memory -->
+    <div class="arcade">
+      <div class="arcade-title">🌙 Moon Memory</div>
+      <div class="arcade-sub">match the pairs · clear the sky</div>
+      <div class="memory-grid" id="memoryGrid"></div>
+      <button class="night-btn" id="resetMemoryBtn">Reset</button>
+    </div>
+
+    <!-- firefly whack -->
+    <div class="arcade">
+      <div class="arcade-title">✨ Firefly Whack</div>
+      <div class="arcade-sub">tap the fireflies before they drift away · 15 seconds</div>
+      <div id="fireflyArea"></div>
+      <p class="score-line" id="fireflyScore">score: 0</p>
+      <button class="night-btn" id="startFireflyBtn">Start</button>
+    </div>
+
+    <!-- wishing star reaction -->
+    <div class="arcade">
+      <div class="arcade-title">🌠 Wishing Star</div>
+      <div class="arcade-sub">tap the star the moment it appears</div>
+      <div id="wishArea"><span style="font-family:'Poppins',sans-serif;font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:#8a7aa8;">press start</span></div>
+      <p class="score-line" id="wishScore">best: -- ms</p>
+      <button class="night-btn" id="startWishBtn">Start</button>
+    </div>
+  </section>
+
+  <!-- final -->
+  <section class="final">
+    <div class="final-star">🌟</div>
+    <h2 class="final-title">You are<br><span class="accent">my whole sky</span></h2>
+    <p class="final-text">You are the calmest thing that has ever happened to me. The softest landing. The warmest room. I don't need a special occasion to tell you this. I just need you to know, every single day, that I love you. Gently, generously, endlessly.</p>
+    <div class="final-sig">— yours, always 🤍</div>
+  </section>
+
+  <div class="footer">made with love · under the same moon</div>
+</div>
+
+<!-- lightbox -->
+<div id="lightbox" onclick="this.classList.remove('show')"><img id="lightboxImg" src="" alt=""></div>
+
+<script>
+(function () {
+  /* ============ STARFIELD CANVAS ============ */
+  var starsCanvas = document.getElementById('starsCanvas');
+  var sctx = starsCanvas.getContext('2d');
+  var stars = [];
+  function resizeStars() {
+    starsCanvas.width = window.innerWidth;
+    starsCanvas.height = window.innerHeight;
+    stars = [];
+    var count = Math.floor((window.innerWidth * window.innerHeight) / 6000);
+    for (var i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * starsCanvas.width,
+        y: Math.random() * starsCanvas.height,
+        r: Math.random() * 1.4 + 0.2,
+        a: Math.random() * 0.7 + 0.2,
+        tw: Math.random() * Math.PI * 2,
+        twSpeed: 0.005 + Math.random() * 0.02
+      });
+    }
+  }
+  window.addEventListener('resize', resizeStars);
+  resizeStars();
+
+  function drawStars() {
+    sctx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      s.tw += s.twSpeed;
+      var alpha = s.a + Math.sin(s.tw) * 0.3;
+      if (alpha < 0) alpha = 0;
+      sctx.beginPath();
+      sctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      sctx.fillStyle = 'rgba(255, 245, 220, ' + alpha + ')';
+      sctx.fill();
+    }
+    requestAnimationFrame(drawStars);
+  }
+  drawStars();
+
+  /* ============ FIREFLIES ============ */
+  function spawnFirefly() {
+    var f = document.createElement('div');
+    f.className = 'firefly';
+    f.style.left = Math.random() * 100 + 'vw';
+    f.style.top = Math.random() * 100 + 'vh';
+    f.style.animationDuration = (8 + Math.random() * 8) + 's';
+    f.style.animationDelay = (Math.random() * 2) + 's';
+    document.body.appendChild(f);
+    setTimeout(function(){ if (f.parentNode) f.remove(); }, 18000);
+  }
+  setInterval(spawnFirefly, 1400);
+  for (var ff = 0; ff < 6; ff++) spawnFirefly();
+
+  /* ============ OPENING ============ */
+  var opening = document.getElementById('opening');
+  var main = document.getElementById('main');
+  opening.addEventListener('click', function () {
+    opening.classList.add('hidden');
+    main.classList.add('visible');
+    main.style.display = 'block';
+  });
+
+  /* ============ LIGHTBOX ============ */
+  window.openLightbox = function(src) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightbox').classList.add('show');
+  };
+
+  /* ============ APOLOGY TOGGLE ============ */
+  document.getElementById('apologyToggle').addEventListener('click', function () {
+    document.getElementById('apologyMsg').classList.toggle('show');
+  });
+
+  /* ============ STORYBOOK PAGES ============ */
+  var pages = document.querySelectorAll('.page');
+  var currentPage = 0;
+  var prevBtn = document.getElementById('prevPage');
+  var nextBtn = document.getElementById('nextPage');
+  function showPage(idx) {
+    pages.forEach(function(p, i) { p.classList.toggle('active', i === idx); });
+    prevBtn.disabled = idx === 0;
+    nextBtn.textContent = idx === pages.length - 1 ? 'The end 🤍' : 'Next page';
+    currentPage = idx;
+  }
+  prevBtn.addEventListener('click', function () { if (currentPage > 0) showPage(currentPage - 1); });
+  nextBtn.addEventListener('click', function () {
+    if (currentPage < pages.length - 1) showPage(currentPage + 1);
+  });
+
+  /* ============ PILL JAR ============ */
+  var pills = [
+    "The way you go quiet when you're really thinking about something 🤍",
+    "How you always know when I need a hug before I ask 🫂",
+    "The face you make when you're trying not to laugh 😌",
+    "The way you say 'okay but listen' before something important ✨",
+    "How you care for people without ever making it a big deal 🌙",
+    "Your sleepy voice. That's the whole memory. 💫",
+    "How you always make room at the table for everyone 🤍",
+    "The way you remember tiny things I told you months ago 🥺",
+    "The way you cry at movies and then pretend you didn't 😭",
+    "How you always believe me even when I'm not sure of myself ✨"
+  ];
+  var jar = document.getElementById('jar');
+  var pillDisplay = document.getElementById('pillDisplay');
+  jar.addEventListener('click', function () {
+    var p = pills[Math.floor(Math.random() * pills.length)];
+    pillDisplay.textContent = p;
+    pillDisplay.classList.remove('pop');
+    jar.classList.remove('shake');
+    void pillDisplay.offsetWidth;
+    pillDisplay.classList.add('pop');
+    jar.classList.add('shake');
+  });
+
+  /* ============ CONSTELLATION GAME ============ */
+  var cCanvas = document.getElementById('constellationCanvas');
+  var cctx = cCanvas.getContext('2d');
+  var cStatus = document.getElementById('constellationStatus');
+  var constellationStars = [];
+  var constellationLines = [];
+  var constellationTarget = 8;
+  var constellationConnected = 0;
+
+  function sizeConstellation() {
+    cCanvas.width = cCanvas.offsetWidth;
+    cCanvas.height = cCanvas.offsetHeight;
+    initConstellation();
+  }
+
+  function initConstellation() {
+    constellationStars = [];
+    constellationLines = [];
+    constellationConnected = 0;
+    cStatus.textContent = 'Drag from one star to another to draw the shape';
+    var w = cCanvas.width, h = cCanvas.height;
+    var pad = 40;
+    for (var i = 0; i < 8; i++) {
+      constellationStars.push({
+        x: pad + Math.random() * (w - pad * 2),
+        y: pad + Math.random() * (h - pad * 2),
+        r: 4 + Math.random() * 3,
+        tw: Math.random() * Math.PI * 2,
+        connected: false
+      });
+    }
+    drawConstellation();
+  }
+
+  function drawConstellation() {
+    cctx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+    // background stars
+    for (var k = 0; k < 60; k++) {
+      cctx.beginPath();
+      cctx.arc(
+        (k * 137) % cCanvas.width,
+        (k * 311) % cCanvas.height,
+        0.6, 0, Math.PI * 2
+      );
+      cctx.fillStyle = 'rgba(255,245,220,.25)';
+      cctx.fill();
+    }
+    // drawn lines
+    cctx.lineWidth = 2;
+    constellationLines.forEach(function (l) {
+      cctx.beginPath();
+      cctx.moveTo(l.a.x, l.a.y);
+      cctx.lineTo(l.b.x, l.b.y);
+      cctx.strokeStyle = 'rgba(255,220,160,.7)';
+      cctx.shadowColor = '#ffe9a8';
+      cctx.shadowBlur = 12;
+      cctx.stroke();
+      cctx.shadowBlur = 0;
+    });
+    // stars
+    constellationStars.forEach(function (s) {
+      s.tw += 0.03;
+      var a = 0.7 + Math.sin(s.tw) * 0.3;
+      cctx.beginPath();
+      cctx.arc(s.x, s.y, s.r * 2, 0, Math.PI * 2);
+      cctx.fillStyle = 'rgba(255,220,160,' + (a * 0.15) + ')';
+      cctx.fill();
+      cctx.beginPath();
+      cctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      cctx.fillStyle = s.connected ? 'rgba(255,240,200,' + a + ')' : 'rgba(255,240,200,.75)';
+      cctx.fill();
+    });
+    requestAnimationFrame(drawConstellation);
+  }
+
+  var dragStart = null;
+  function getPos(e) {
+    var rect = cCanvas.getBoundingClientRect();
+    var cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    var cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    return { x: cx, y: cy };
+  }
+  function findStar(pos) {
+    for (var i = 0; i < constellationStars.length; i++) {
+      var s = constellationStars[i];
+      var dx = s.x - pos.x, dy = s.y - pos.y;
+      if (Math.sqrt(dx * dx + dy * dy) < 24) return s;
+    }
+    return null;
+  }
+  function onStart(e) {
+    e.preventDefault();
+    var pos = getPos(e);
+    var s = findStar(pos);
+    if (s) dragStart = s;
+  }
+  function onEnd(e) {
+    if (!dragStart) return;
+    e.preventDefault();
+    var pos = getPos(e.changedTouches ? { touches: e.changedTouches } : e);
+    var s = findStar(pos);
+    if (s && s !== dragStart) {
+      var already = constellationLines.some(function (l) {
+        return (l.a === dragStart && l.b === s) || (l.a === s && l.b === dragStart);
+      });
+      if (!already) {
+        constellationLines.push({ a: dragStart, b: s });
+        dragStart.connected = true;
+        s.connected = true;
+        constellationConnected++;
+        if (constellationConnected >= constellationTarget) {
+          cStatus.textContent = '✨ you drew our sky. i love you. ✨';
+        } else {
+          cStatus.textContent = constellationConnected + ' line' + (constellationConnected === 1 ? '' : 's') + ' drawn · keep going';
+        }
+      }
+    }
+    dragStart = null;
+  }
+  cCanvas.addEventListener('mousedown', onStart);
+  cCanvas.addEventListener('mouseup', onEnd);
+  cCanvas.addEventListener('touchstart', onStart, { passive: false });
+  cCanvas.addEventListener('touchend', onEnd, { passive: false });
+  window.addEventListener('resize', sizeConstellation);
+
+  // wait for layout then size
+  setTimeout(sizeConstellation, 100);
+
+  document.getElementById('resetConstellationBtn').addEventListener('click', function () {
+    initConstellation();
+  });
+
+  /* ============ GUESS THE MEMORY FLIP CARDS ============ */
+  document.querySelectorAll('.guess-card').forEach(function (card) {
+    card.addEventListener('click', function () { card.classList.toggle('flipped'); });
+  });
+
+  /* ============ SONG (Web Audio lullaby) ============ */
+  var songIcon = document.getElementById('songIcon');
+  var songCtx = null, songPlaying = false, songTimer = null;
+  // gentle lullaby in a minor-ish feel
+  var songNotes = [261.63, 329.63, 392.00, 329.63, 261.63, 293.66, 349.23, 293.66, 261.63, 246.94, 220.00, 246.94, 261.63, 329.63, 392.00, 523.25];
+  var songIdx = 0;
+  function songNote() {
+    if (!songCtx) return;
+    var o = songCtx.createOscillator();
+    var g = songCtx.createGain();
+    o.type = 'triangle';
+    o.frequency.value = songNotes[songIdx % songNotes.length];
+    g.gain.setValueAtTime(0.0001, songCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.06, songCtx.currentTime + 0.08);
+    g.gain.exponentialRampToValueAtTime(0.0001, songCtx.currentTime + 1.1);
+    o.connect(g);
+    g.connect(songCtx.destination);
+    o.start();
+    o.stop(songCtx.currentTime + 1.15);
+    songIdx++;
+  }
+  songIcon.addEventListener('click', function () {
+    if (!songCtx) songCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (songPlaying) {
+      songPlaying = false;
+      clearInterval(songTimer);
+      songIcon.classList.remove('playing');
+    } else {
+      songPlaying = true;
+      songIcon.classList.add('playing');
+      songNote();
+      songTimer = setInterval(songNote, 800);
+    }
+  });
+
+  // music toggle same melody
+  var musicToggle = document.getElementById('musicToggle');
+  var mCtx = null, mPlaying = false, mTimer = null, mIdx = 0;
+  var mMelody = [523.25, 587.33, 659.25, 783.99, 659.25, 587.33, 523.25, 392.00];
+  function mNote() {
+    if (!mCtx) return;
+    var o = mCtx.createOscillator();
+    var g = mCtx.createGain();
+    o.type = 'sine';
+    o.frequency.value = mMelody[mIdx % mMelody.length];
+    g.gain.setValueAtTime(0.0001, mCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.05, mCtx.currentTime + 0.05);
+    g.gain.exponentialRampToValueAtTime(0.0001, mCtx.currentTime + 0.7);
+    o.connect(g); g.connect(mCtx.destination);
+    o.start(); o.stop(mCtx.currentTime + 0.75);
+    mIdx++;
+  }
+  musicToggle.addEventListener('click', function () {
+    if (!mCtx) mCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (mPlaying) {
+      mPlaying = false;
+      clearInterval(mTimer);
+      musicToggle.classList.remove('playing');
+      musicToggle.textContent = '🎵';
+    } else {
+      mPlaying = true;
+      musicToggle.classList.add('playing');
+      musicToggle.textContent = '🎶';
+      mNote();
+      mTimer = setInterval(mNote, 700);
+    }
+  });
+
+  /* ============ STAR CATCHER ============ */
+  var starArea = document.getElementById('starArea');
+  var starScoreEl = document.getElementById('starScore');
+  var starScore = 0, starActive = false, starSpawn = null, starEnd = null;
+  document.getElementById('startStarBtn').addEventListener('click', function () {
+    starArea.innerHTML = ''; starScore = 0;
+    starScoreEl.textContent = 'score: 0';
+    starActive = true;
+    if (starSpawn) clearInterval(starSpawn);
+    if (starEnd) clearTimeout(starEnd);
+    starSpawn = setInterval(function () {
+      if (!starActive) return;
+      var st = document.createElement('div');
+      st.className = 'falling-star';
+      st.textContent = ['⭐','🌟','✨','💫'][Math.floor(Math.random()*4)];
+      st.style.left = Math.random() * 86 + '%';
+      st.style.top = '-40px';
+      var duration = 1.8 + Math.random() * 1.4;
+      st.style.transition = 'transform ' + duration + 's linear';
+      starArea.appendChild(st);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          st.style.transform = 'translateY(340px)';
+        });
+      });
+      st.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (!starActive) return;
+        starScore++;
+        starScoreEl.textContent = 'score: ' + starScore;
+        st.textContent = '💖';
+        setTimeout(function(){ if (st.parentNode) st.remove(); }, 140);
+      });
+      setTimeout(function () { if (st.parentNode) st.remove(); }, duration * 1000 + 150);
+    }, 520);
+    starEnd = setTimeout(function () {
+      starActive = false;
+      clearInterval(starSpawn);
+      starArea.innerHTML = '';
+      alert('Time! You caught ' + starScore + ' stars 🌟');
+    }, 15000);
+  });
+
+  /* ============ MOON MEMORY ============ */
+  var MEMO_EMOJIS = ['🌙','🌙','⭐','⭐','💫','💫','🪐','🪐','✨','✨','🌠','🌠','🤍','🤍','🌟','🌟'];
+  var mGrid = document.getElementById('memoryGrid');
+  var mFirst = null, mSecond = null, mLock = false, mMatched = 0;
+  function initMoonMemory() {
+    mGrid.innerHTML = '';
+    mFirst = mSecond = null; mLock = false; mMatched = 0;
+    var deck = MEMO_EMOJIS.slice().sort(function(){ return Math.random() - 0.5; });
+    deck.forEach(function (emoji) {
+      var card = document.createElement('div');
+      card.className = 'memory-card';
+      card.textContent = emoji;
+      card.dataset.emoji = emoji;
+      card.addEventListener('click', function () { flipMoon(card); });
+      mGrid.appendChild(card);
+    });
+  }
+  function flipMoon(card) {
+    if (mLock || card === mFirst || card.classList.contains('matched')) return;
+    card.classList.add('flipped');
+    if (!mFirst) { mFirst = card; return; }
+    mSecond = card; mLock = true;
+    if (mFirst.dataset.emoji === mSecond.dataset.emoji) {
+      mFirst.classList.add('matched');
+      mSecond.classList.add('matched');
+      mMatched++;
+      mFirst = mSecond = null;
+      mLock = false;
+      if (mMatched === 8) setTimeout(function(){ alert('✨ sky clear ✨'); }, 300);
+    } else {
+      setTimeout(function () {
+        mFirst.classList.remove('flipped');
+        mSecond.classList.remove('flipped');
+        mFirst = mSecond = null;
+        mLock = false;
+      }, 750);
+    }
+  }
+  document.getElementById('resetMemoryBtn').addEventListener('click', initMoonMemory);
+  initMoonMemory();
+
+  /* ============ FIREFLY WHACK ============ */
+  var fireflyArea = document.getElementById('fireflyArea');
+  var fireflyScoreEl = document.getElementById('fireflyScore');
+  var fScore = 0, fActive = false, fSpawn = null, fEnd = null;
+  document.getElementById('startFireflyBtn').addEventListener('click', function () {
+    fireflyArea.innerHTML = ''; fScore = 0;
+    fireflyScoreEl.textContent = 'score: 0';
+    fActive = true;
+    if (fSpawn) clearInterval(fSpawn);
+    if (fEnd) clearTimeout(fEnd);
+    fSpawn = setInterval(function () {
+      if (!fActive) return;
+      var existing = fireflyArea.querySelectorAll('.firefly-game');
+      if (existing.length > 3) existing[0].remove();
+      var f = document.createElement('div');
+      f.className = 'firefly-game';
+      f.textContent = '✨';
+      f.style.left = Math.random() * 82 + '%';
+      f.style.top = Math.random() * 72 + '%';
+      f.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (!fActive) return;
+        fScore++;
+        fireflyScoreEl.textContent = 'score: ' + fScore;
+        f.textContent = '💫';
+        setTimeout(function(){ if (f.parentNode) f.remove(); }, 120);
+      });
+      fireflyArea.appendChild(f);
+      var life = 900 + Math.random() * 600;
+      setTimeout(function () { if (f.parentNode && f.textContent !== '💫') f.remove(); }, life);
+    }, 440);
+    fEnd = setTimeout(function () {
+      fActive = false;
+      clearInterval(fSpawn);
+      fireflyArea.innerHTML = '';
+      alert('Time! Fireflies caught: ' + fScore + ' ✨');
+    }, 15000);
+  });
+
+  /* ============ WISHING STAR REACTION ============ */
+  var wishArea = document.getElementById('wishArea');
+  var wishScoreEl = document.getElementById('wishScore');
+  var wishTimeout = null, wishStart = null, wishActive = false;
+  document.getElementById('startWishBtn').addEventListener('click', function () {
+    wishArea.innerHTML = '<span style="font-family:\'Poppins\',sans-serif;font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:#8a7aa8;">get ready...</span>';
+    wishActive = true;
+    var delay = 1500 + Math.random() * 2500;
+    if (wishTimeout) clearTimeout(wishTimeout);
+    wishTimeout = setTimeout(function () {
+      wishArea.innerHTML = '';
+      var w = document.createElement('div');
+      w.className = 'wish-star';
+      w.textContent = '🌠';
+      wishArea.appendChild(w);
+      wishStart = Date.now();
+      w.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (!wishActive) return;
+        var ms = Date.now() - wishStart;
+        wishScoreEl.textContent = 'your time: ' + ms + ' ms 🌠';
+        wishArea.innerHTML = '<span style="font-family:\'Poppins\',sans-serif;font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:#ffe9a8;">' + ms + ' ms ✨</span>';
+        wishActive = false;
+      });
+    }, delay);
+  });
+
+})();
+</script>
+</body>
+</html>
